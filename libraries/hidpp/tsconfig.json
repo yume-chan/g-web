@@ -1,13 +1,18 @@
 {
-    "extends": "./node_modules/@yume-chan/ts-package-builder/tsconfig.base.json",
-    "compilerOptions": {
-        "types": [
-            "node",
-            "jest"
-        ]
-    },
-    "testTypes": [
-        "node",
-        "jest"
+  "extends": "./node_modules/@yume-chan/ts-package-builder/tsconfig.base.json",
+  "compilerOptions": {
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "types": [
+      "@types/w3c-web-hid",
+      "jest"
     ]
+  },
+  "testTypes": [
+    "@types/w3c-web-hid",
+    "node",
+    "jest"
+  ]
 }
