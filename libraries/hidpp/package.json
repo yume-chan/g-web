@@ -14,14 +14,14 @@
     "email": "cnsimonchan@live.com",
     "url": "https://chensi.moe/blog"
   },
-  "homepage": "https://github.com/yume-chan/logitech-web-control/tree/master/libraries/hidpp#readme",
+  "homepage": "https://github.com/yume-chan/solaaar/tree/master/libraries/hidpp#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yume-chan/logitech-web-control.git",
+    "url": "git+https://github.com/yume-chan/solaaar.git",
     "directory": "libraries/hidpp"
   },
   "bugs": {
-    "url": "https://github.com/yume-chan/logitech-web-control/issues"
+    "url": "https://github.com/yume-chan/solaaar/issues"
   },
   "main": "cjs/index.js",
   "module": "esm/index.js",

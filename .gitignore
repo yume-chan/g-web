@@ -66,3 +66,11 @@ common/autoinstallers/*/.npmrc
 
 # Heft
 .heft
+
+# TypeScript build output
+lib
+cjs
+dts
+esm
+dist
+*.tsbuildinfo
