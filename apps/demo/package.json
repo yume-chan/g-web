@@ -1,0 +1,35 @@
+{
+  "name": "demo",
+  "version": "0.0.1",
+  "description": "Demo for hidpp",
+  "private": true,
+  "license": "MIT",
+  "author": {
+    "name": "Simon Chan",
+    "email": "cnsimonchan@live.com",
+    "url": "https://chensi.moe/blog"
+  },
+  "homepage": "https://github.com/yume-chan/solaaar/tree/master/apps/demo#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yume-chan/solaaar.git",
+    "directory": "apps/demo"
+  },
+  "bugs": {
+    "url": "https://github.com/yume-chan/solaaar/issues"
+  },
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "types": "dts/index.d.ts",
+  "scripts": {
+    "start": "parcel index.html"
+  },
+  "dependencies": {
+    "@yume-chan/hidpp": "^0.0.1"
+  },
+  "devDependencies": {
+    "parcel": "^2.0.0",
+    "typescript": "^4.4.3"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead"
+}

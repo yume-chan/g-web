@@ -7,11 +7,11 @@
     ],
     "types": [
       "@types/w3c-web-hid",
+      "node",
       "jest"
     ]
   },
   "testTypes": [
-    "@types/w3c-web-hid",
     "node",
     "jest"
   ]

@@ -431,6 +431,10 @@
     {
       "packageName": "@yume-chan/hidpp",
       "projectFolder": "libraries/hidpp"
+    },
+    {
+      "packageName": "demo",
+      "projectFolder": "apps/demo"
     }
   ]
 }
