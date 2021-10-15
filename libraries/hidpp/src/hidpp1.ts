@@ -186,14 +186,12 @@ export class Hidpp1 {
     if (response.command >= 0x80 && this.request) {
       if (response.command === 0x8f) {
         const errorPacket = await deserialize(Hidpp1ErrorPacket, data.buffer.slice(HidppPacket.size));
-        console.log('report', errorPacket);
         const error = new Error(Hidpp1ErrorMessages[errorPacket.errorCode]);
         (error as any).code = errorPacket.errorCode;
         this.request.reject(error);
       } else {
         const accessPacket = await deserialize(Hidpp1RegisterAccessPacket, data.buffer.slice(HidppPacket.size));
         const remaining = data.buffer.slice(HidppPacket.size + Hidpp1RegisterAccessPacket.size);
-        console.log('report', accessPacket, remaining);
         this.request.resolve(remaining);
         this.request = undefined;
       }
