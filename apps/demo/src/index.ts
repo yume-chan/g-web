@@ -1,4 +1,4 @@
-import { AdjustableDpi, Hidpp, Receiver, requestDevice } from '@yume-chan/hidpp';
+import { AdjustableDpi, Hidpp, Receiver, requestDevice, TypeAndName } from "@yume-chan/hidpp";
 
 const settings = document.getElementById('settings') as HTMLDivElement;
 
@@ -34,8 +34,15 @@ document.getElementById('select-button')!.onclick = async () => {
     const currentDpi = await dpi.getDpi();
     console.log(currentDpi);
 
-    const label = document.createElement('label');
-    label.innerText = `DPI: `;
+    const name = document.createElement('div');
+    // const friendlyName = new FriendlyName(device);
+    // name.textContent = await friendlyName.getDefaultFriendlyName();
+    const typeAndName = new TypeAndName(device);
+    name.textContent = await typeAndName.getDeviceName();
+    settings.appendChild(name);
+
+    const div = document.createElement('div');
+    div.textContent = `DPI: `;
 
     const select = document.createElement('select');
     for (const value of dpiList) {
@@ -50,7 +57,7 @@ document.getElementById('select-button')!.onclick = async () => {
       await dpi.setDpi(parseInt(select.value, 10));
     };
 
-    label.appendChild(select);
-    settings.appendChild(label);
+    div.appendChild(select);
+    settings.appendChild(div);
   }
 };

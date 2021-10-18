@@ -31,7 +31,7 @@ export class AdjustableDpi {
           step = value & 0x1fff;
           continue;
         }
-        list.push(value & 0x1fff);
+        list.push(value);
       }
       if (step) {
         const result: number[] = [];

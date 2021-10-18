@@ -135,7 +135,7 @@ export class Hidpp {
           'response',
           command.toString(16),
           (this.version === 2 ? address >> 4 : address).toString(16),
-          slice
+          Array.from(new Uint8Array(slice))
         );
       }
 
