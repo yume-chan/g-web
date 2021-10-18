@@ -6,6 +6,7 @@ specifiers:
   '@types/node': ^16.9.1
   '@types/w3c-web-hid': ^1.0.2
   '@yume-chan/async': ^2.1.4
+  '@yume-chan/event': ^0.0.9
   '@yume-chan/struct': ^0.0.9
   '@yume-chan/ts-package-builder': ^1.0.0
   jest: ^26.6.3
@@ -19,6 +20,7 @@ dependencies:
   '@types/node': 16.10.9
   '@types/w3c-web-hid': 1.0.2
   '@yume-chan/async': 2.1.4
+  '@yume-chan/event': 0.0.9
   '@yume-chan/struct': 0.0.9
   '@yume-chan/ts-package-builder': 1.0.0_typescript@4.4.4
   jest: 26.6.3
@@ -2363,6 +2365,13 @@ packages:
     resolution: {integrity: sha512-dfzxt6iV7G3m+XEIHJH0eNBjh0bxI0pduRCGpA+dR1u38l7U87GpnGm2Vq1/Na+C1ZWod6mJMRoDECLKjWYXEg==}
     dependencies:
       tslib: 2.0.3
+    dev: false
+
+  /@yume-chan/event/0.0.9:
+    resolution: {integrity: sha512-a+D+qWafRSwK76Xuo8Toh6emiuzdC2JknL9m1Rlt0jCs8Nno+wI+ddn0og8tcGYfhdTojAyyuK7ICFqtidKqOg==}
+    dependencies:
+      '@yume-chan/async': 2.1.4
+      tslib: 2.1.0
     dev: false
 
   /@yume-chan/struct/0.0.9:
@@ -9573,13 +9582,14 @@ packages:
     dev: false
 
   file:projects/hidpp.tgz:
-    resolution: {integrity: sha512-ZTQJgCrj+9+hBgc30YbjnbuBJwzbcMxN1VYtkkZExUs5NzMqt9tbv4fu71dg2RgNG95mWzJKl14v7YbN3MXViw==, tarball: file:projects/hidpp.tgz}
+    resolution: {integrity: sha512-VvH1gglD6wpcQjAT4qJRjBZGthKEumOtPO0A5O4ibzY5Qow0PgGjPkfbUWLQzJe0IUaXkDmaskdvosSOzQnlOA==, tarball: file:projects/hidpp.tgz}
     name: '@rush-temp/hidpp'
     version: 0.0.0
     dependencies:
       '@types/node': 16.10.9
       '@types/w3c-web-hid': 1.0.2
       '@yume-chan/async': 2.1.4
+      '@yume-chan/event': 0.0.9
       '@yume-chan/struct': 0.0.9
       '@yume-chan/ts-package-builder': 1.0.0_typescript@4.4.4
       jest: 26.6.3

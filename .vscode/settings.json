@@ -3,6 +3,7 @@
     "Hidpp",
     "inputreport",
     "Mutex",
+    "struct",
     "yume"
   ]
 }

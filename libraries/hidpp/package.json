@@ -35,6 +35,7 @@
   "dependencies": {
     "@types/w3c-web-hid": "^1.0.2",
     "@yume-chan/async": "^2.1.4",
+    "@yume-chan/event": "^0.0.9",
     "@yume-chan/struct": "^0.0.9",
     "tslib": "^2.3.1"
   },
