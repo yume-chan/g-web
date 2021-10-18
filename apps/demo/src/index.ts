@@ -2,7 +2,7 @@ import { AdjustableDpi, Hidpp, Receiver, requestDevice } from '@yume-chan/hidpp'
 
 const settings = document.getElementById('settings') as HTMLDivElement;
 
-document.getElementById('select-button').onclick = async () => {
+document.getElementById('select-button')!.onclick = async () => {
   const device = await requestDevice();
   console.log(device);
   const hidpp = new Hidpp(device, 0xff);

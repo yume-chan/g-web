@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "ESNext",
     "module": "ESNext",
     "lib": [
       "ESNext",
       "DOM"
     ],
+    "strict": true,
     "sourceMap": true,
+    "resolveJsonModule": true,
     "moduleResolution": "Node",
     "esModuleInterop": true,
+    "noEmit": true,
+    "noImplicitReturns": true
   }
 }

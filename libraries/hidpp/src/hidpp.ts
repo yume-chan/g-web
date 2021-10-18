@@ -282,6 +282,9 @@ export async function requestDevice(): Promise<HIDDevice> {
   const devices = await window.navigator.hid.requestDevice({
     filters: [DEVICE_FILTER],
   });
+  if (devices.length === 0) {
+    throw new Error('No device selected');
+  }
   const device = devices.find(
     device =>
       device.collections.find(
