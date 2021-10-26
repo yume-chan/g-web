@@ -1,15 +1,21 @@
-import { AdjustableDpi, Hidpp, Receiver, ReportRate, requestDevice, TypeAndName } from "@yume-chan/hidpp";
+import { AdjustableDpi, Hidpp, Receiver, ReportRate, requestDevice, isHidppDevice, TypeAndName } from "@yume-chan/hidpp";
 
 const settings = document.getElementById('settings') as HTMLDivElement;
 
-document.getElementById('select-button')!.onclick = async () => {
-  const device = await requestDevice();
+const devices: HIDDevice[] = [];
+
+async function openDevice(device: HIDDevice) {
+  if (devices.includes(device)) {
+    return;
+  }
+  devices.push(device);
+
   console.log(device);
   const hidpp = new Hidpp(device, 0xff);
   await hidpp.getVersion();
   console.log(hidpp);
 
-  const devices: Hidpp[] = [];
+  const children: Hidpp[] = [];
 
   // Assume all HID++ 1.0 devices are USB receivers
   // (mouses/keyboards started using HID++ 2.0 a long time ago)
@@ -20,13 +26,13 @@ document.getElementById('select-button')!.onclick = async () => {
 
     for (const index of childIndices) {
       const child = receiver.getChild(index);
-      devices.push(child);
+      children.push(child);
     }
   } else {
-    devices.push(hidpp);
+    children.push(hidpp);
   }
 
-  for (const device of devices) {
+  for (const device of children) {
     console.log(device);
 
     const name = document.createElement('div');
@@ -90,4 +96,25 @@ document.getElementById('select-button')!.onclick = async () => {
       console.error(e);
     }
   }
+}
+
+(async () => {
+  // Open known devices
+  const devices = await navigator.hid.getDevices();
+  for (const device of devices) {
+    // One physical device may contain multiple HID devices
+    // Find the HID device that implements HID++
+    if (isHidppDevice(device))
+      await openDevice(device);
+  }
+})();
+
+document.getElementById('select-button')!.onclick = async () => {
+  const device = await requestDevice();
+  if (devices.includes(device)) {
+    return;
+  }
+
+  console.log(device);
+  await openDevice(device);
 };

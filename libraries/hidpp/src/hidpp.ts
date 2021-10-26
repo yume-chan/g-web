@@ -278,6 +278,14 @@ export class Hidpp {
   }
 }
 
+export function isHidppDevice(device: HIDDevice) {
+  return device.collections.some(
+    collection =>
+      collection.usagePage === 0xff43 || // modern devices
+      collection.usagePage === 0xff00 // legacy devices
+  );
+}
+
 export async function requestDevice(): Promise<HIDDevice> {
   const devices = await window.navigator.hid.requestDevice({
     filters: [DEVICE_FILTER],
@@ -285,14 +293,7 @@ export async function requestDevice(): Promise<HIDDevice> {
   if (devices.length === 0) {
     throw new Error('No device selected');
   }
-  const device = devices.find(
-    device =>
-      device.collections.find(
-        collection =>
-          collection.usagePage === 0xff43 || // modern devices
-          collection.usagePage === 0xff00 // legacy devices
-      )
-  );
+  const device = devices.find(isHidppDevice);
   if (!device) {
     throw new Error('Device not recognized');
   }
