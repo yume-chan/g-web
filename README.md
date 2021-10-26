@@ -24,8 +24,8 @@ Current state:
 ### Mouse
 
 - [x] DPI (no multiple DPI)
+- [x] Report rate
 - [ ] Button remapping
-- [ ] Report rate
 
 ### Keyboard
 

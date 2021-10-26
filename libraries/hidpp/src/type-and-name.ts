@@ -20,7 +20,6 @@ export class TypeAndName {
     return view[0];
   }
 
-
   async getDeviceName(): Promise<string> {
     const featureIndex = await this.hidpp.getFeatureIndex(0x0005);
     const nameLength = await this.getDeviceNameLength();

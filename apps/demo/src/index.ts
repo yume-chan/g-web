@@ -1,4 +1,4 @@
-import { AdjustableDpi, Hidpp, Receiver, requestDevice, TypeAndName } from "@yume-chan/hidpp";
+import { AdjustableDpi, Hidpp, Receiver, ReportRate, requestDevice, TypeAndName } from "@yume-chan/hidpp";
 
 const settings = document.getElementById('settings') as HTMLDivElement;
 
@@ -28,11 +28,6 @@ document.getElementById('select-button')!.onclick = async () => {
 
   for (const device of devices) {
     console.log(device);
-    const dpi = new AdjustableDpi(device);
-    const dpiList = await dpi.getDpiList();
-    console.log(dpiList);
-    const currentDpi = await dpi.getDpi();
-    console.log(currentDpi);
 
     const name = document.createElement('div');
     // const friendlyName = new FriendlyName(device);
@@ -41,23 +36,58 @@ document.getElementById('select-button')!.onclick = async () => {
     name.textContent = await typeAndName.getDeviceName();
     settings.appendChild(name);
 
-    const div = document.createElement('div');
-    div.textContent = `DPI: `;
+    try {
+      const dpi = new AdjustableDpi(device);
+      const dpiList = await dpi.getDpiList();
+      console.log(dpiList);
+      const currentDpi = await dpi.getDpi();
+      console.log(currentDpi);
 
-    const select = document.createElement('select');
-    for (const value of dpiList) {
-      const option = document.createElement('option');
-      option.value = value.toString();
-      option.innerText = value.toString();
-      select.appendChild(option);
+      const div = document.createElement('div');
+      div.textContent = `DPI: `;
+
+      const select = document.createElement('select');
+      for (const value of dpiList) {
+        const option = document.createElement('option');
+        option.value = value.toString();
+        option.innerText = value.toString();
+        select.appendChild(option);
+      }
+      select.value = currentDpi.toString();
+      select.onchange = async () => {
+        console.log(select.value);
+        await dpi.setDpi(parseInt(select.value, 10));
+      };
+
+      div.appendChild(select);
+      settings.appendChild(div);
+    } catch { }
+
+    try {
+      const reportRate = new ReportRate(device);
+      const reportRateList = await reportRate.getReportRateList();
+      const currentReportRate = await reportRate.getReportRate();
+
+      const div = document.createElement('div');
+      div.textContent = 'Report Rate: ';
+
+      const select = document.createElement('select');
+      for (const value of reportRateList) {
+        const option = document.createElement('option');
+        option.value = value.toString();
+        option.innerText = `${value}ms`;
+        select.appendChild(option);
+      }
+      select.value = currentReportRate.toString();
+      select.onchange = async () => {
+        console.log(select.value);
+        await reportRate.setReportRate(parseInt(select.value, 10));
+      };
+
+      div.appendChild(select);
+      settings.appendChild(div);
+    } catch (e) {
+      console.error(e);
     }
-    select.value = currentDpi.toString();
-    select.onchange = async () => {
-      console.log(select.value);
-      await dpi.setDpi(parseInt(select.value, 10));
-    };
-
-    div.appendChild(select);
-    settings.appendChild(div);
   }
 };
