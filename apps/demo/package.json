@@ -23,7 +23,7 @@
   "types": "dts/index.d.ts",
   "scripts": {
     "start": "vite",
-    "build": "tsc && vite build"
+    "build": "tsc && vite build --base=/g-web/"
   },
   "dependencies": {
     "@yume-chan/hidpp": "^0.0.1"
