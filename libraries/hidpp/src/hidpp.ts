@@ -88,6 +88,17 @@ export class Hidpp {
     const view = new Uint8Array(data.buffer);
 
     const deviceIndex = view[0];
+
+    if (DEBUG) {
+      const command = view[1];
+      const address = view[2];
+      const slice = data.buffer.slice(3);
+      console.log(
+        `raw message ${deviceIndex} 0x${command.toString(16).padStart(2, '0')} 0x${address.toString(16).padStart(2, '0')}`,
+        Array.from(new Uint8Array(slice))
+      );
+    }
+
     if (deviceIndex !== this.index) {
       return;
     }
@@ -108,12 +119,7 @@ export class Hidpp {
         const errorCode = view[4] as Hidpp1ErrorCode;
 
         if (DEBUG) {
-          console.error(
-            'error',
-            command.toString(16),
-            address.toString(16),
-            errorCode
-          );
+          console.error(`error ${command.toString(16)} ${address.toString(16)} ${Hidpp1ErrorMessages[errorCode]}`);
         }
 
         const error = new Error(Hidpp1ErrorMessages[errorCode]);
@@ -126,15 +132,14 @@ export class Hidpp {
     }
 
     const address = view[2];
+
     // Is it for our last request?
     if (request.command === command && request.address === address) {
       const slice = data.buffer.slice(3);
 
       if (DEBUG) {
         console.log(
-          'response',
-          command.toString(16),
-          (this.version === 2 ? address >> 4 : address).toString(16),
+          `response ${deviceIndex} 0x${command.toString(16)} 0x${(this.version === 2 ? address >> 4 : address).toString(16)}`,
           Array.from(new Uint8Array(slice))
         );
       }
@@ -254,9 +259,7 @@ export class Hidpp {
 
       if (DEBUG) {
         console.log(
-          'request',
-          command.toString(16),
-          address.toString(16),
+          `request 0x${command.toString(16)} 0x${address.toString(16)}`,
           data ? Array.from(new Uint8Array(data)) : '',
         );
       }
