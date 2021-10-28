@@ -35,5 +35,6 @@ Current state:
 
 ## Thanks
 
-* [Logitech Official Documentations](http://drive.google.com/folderview?id=0BxbRzx7vEV7eWmgwazJ3NUFfQ28)
-* [Solaar](https://github.com/pwr-Solaar/Solaar): A Logitech device manager for Linux.
+* http://drive.google.com/folderview?id=0BxbRzx7vEV7eWmgwazJ3NUFfQ28: Logitech Official Documentations
+* [pwr-Solaar/Solaar](https://github.com/pwr-Solaar/Solaar): A Logitech device manager for Linux.
+* [cvuchener/hidpp](https://github.com/cvuchener/hidpp): Collection of HID++ tools
