@@ -14,11 +14,11 @@ async function openHidppDevice(device: Hidpp) {
     const receiver = new Receiver(device);
     console.log(receiver);
 
+    receiver.onChildConnect(child => openHidppDevice(child));
+    await receiver.detectChildren();
+
     const childrenCount = await receiver.getChildCount();
     console.log('childrenCount', childrenCount);
-
-    receiver.onChildAdded(child => openHidppDevice(child));
-    await receiver.detectChildren();
 
     return;
   }
@@ -27,6 +27,10 @@ async function openHidppDevice(device: Hidpp) {
   // name.textContent = await friendlyName.getDefaultFriendlyName();
 
   const container = document.createElement('div');
+
+  device.onDisconnect(() => {
+    container.remove();
+  });
 
   try {
     const typeAndName = new TypeAndName(device);

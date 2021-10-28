@@ -1,4 +1,6 @@
 import { PromiseResolver } from "@yume-chan/async";
+import { EventEmitter } from '@yume-chan/event';
+import { Receiver } from "./receiver";
 import { Mutex } from "./mutex";
 
 const DEBUG = true;
@@ -62,15 +64,18 @@ export function concatArrayBuffers(...args: (ArrayBuffer | undefined)[]) {
 export class Hidpp {
   device: HIDDevice;
   index: number;
-  receiver?: Hidpp;
+  receiver?: Receiver;
 
   version: number | undefined;
+
+  private disconnectEvent = new EventEmitter<void>();
+  public readonly onDisconnect = this.disconnectEvent.event;
 
   private _mutex = new Mutex();
   private _request: { command: number, address: number, resolver: PromiseResolver<ArrayBuffer>; } | undefined;
   private _featureIdToIndex: Record<number, { index: number, version: number; }> = {};
 
-  constructor(device: HIDDevice, index: number, receiver?: Hidpp) {
+  constructor(device: HIDDevice, index: number, receiver?: Receiver) {
     this.device = device;
     this.index = index;
     this.receiver = receiver;
@@ -80,7 +85,13 @@ export class Hidpp {
     }
 
     if (this.receiver) {
-      this._mutex = this.receiver._mutex;
+      this._mutex = this.receiver.hidpp._mutex;
+      const dispose = this.receiver.onChildDisconnect(hidpp => {
+        if (hidpp === this) {
+          this.disconnectEvent.fire();
+          dispose();
+        }
+      });
     }
   }
 

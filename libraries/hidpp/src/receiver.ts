@@ -1,5 +1,4 @@
-import { EventEmitter, Event } from '@yume-chan/event';
-
+import { EventEmitter } from '@yume-chan/event';
 import { Hidpp } from "./hidpp";
 
 export class Receiver {
@@ -7,8 +6,11 @@ export class Receiver {
 
   private children: Hidpp[] = [];
 
-  private childAddedEvent = new EventEmitter<Hidpp>();
-  public readonly onChildAdded = this.childAddedEvent.event;
+  private childConnectEvent = new EventEmitter<Hidpp>();
+  public readonly onChildConnect = this.childConnectEvent.event;
+
+  private childDisconnectEvent = new EventEmitter<Hidpp>();
+  public readonly onChildDisconnect = this.childDisconnectEvent.event;
 
   constructor(hidpp: Hidpp) {
     this.hidpp = hidpp;
@@ -22,8 +24,17 @@ export class Receiver {
     if (deviceIndex !== 0xff) {
       const command = view[1];
       if (command === 0x41) {
-        // Device connected
-        this.childAddedEvent.fire(this.getChild(deviceIndex));
+        // Device connected/disconnected
+        if ((view[3] & (1 << 6)) === 0) {
+          if (!this.children[deviceIndex]) {
+            this.childConnectEvent.fire(this.getChild(deviceIndex));
+          }
+        } else {
+          if (this.children[deviceIndex]) {
+            this.childDisconnectEvent.fire(this.getChild(deviceIndex));
+            delete this.children[deviceIndex];
+          }
+        }
         return;
       }
 
@@ -56,6 +67,15 @@ export class Receiver {
   }
 
   public async detectChildren() {
+    // Enable notification
+    await this.hidpp.request(
+      0x10,
+      0x80,
+      0x00,
+      new Uint8Array([0x00, 0x01, 0x00]).buffer
+    );
+
+    // Request receiver to re-scan for devices
     await this.hidpp.request(
       0x10,
       0x80,
@@ -66,7 +86,7 @@ export class Receiver {
 
   public getChild(index: number): Hidpp {
     if (!this.children[index]) {
-      this.children[index] = new Hidpp(this.hidpp.device, index, this.hidpp);
+      this.children[index] = new Hidpp(this.hidpp.device, index, this);
     }
 
     return this.children[index];
