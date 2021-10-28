@@ -7,7 +7,18 @@ export class AdjustableDpi {
     this.hidpp = hidpp;
   }
 
-  public async getDpiList(): Promise<number[]> {
+  public async getSensorCount(): Promise<number> {
+    const { index: featureIndex } = await this.hidpp.getFeature(0x2201);
+    const response = await this.hidpp.request(
+      0x11,
+      featureIndex,
+      0x0
+    );
+    const view = new Uint8Array(response);
+    return view[0];
+  }
+
+  public async getDpiList(sensorIndex: number): Promise<number[]> {
     await this.hidpp.getVersion();
 
     if (this.hidpp.version === 1) {
@@ -17,7 +28,8 @@ export class AdjustableDpi {
       const response = await this.hidpp.request(
         0x11,
         featureIndex,
-        0x1 // GetSensorDpiList
+        0x1,
+        new Uint8Array([sensorIndex]).buffer
       );
       const view = new DataView(response);
       let list: number[] = [];
@@ -45,7 +57,7 @@ export class AdjustableDpi {
     }
   }
 
-  public async getDpi(): Promise<number> {
+  public async getDpi(sensorIndex: number): Promise<number> {
     await this.hidpp.getVersion();
 
     if (this.hidpp.version === 1) {
@@ -55,14 +67,15 @@ export class AdjustableDpi {
       const response = await this.hidpp.request(
         0x11,
         featureIndex,
-        0x2 // GetSensorDpi
+        0x2,
+        new Uint8Array([sensorIndex]).buffer
       );
       const view = new DataView(response);
-      return view.getUint16(1); // SensorId, DpiMSB, DpiLSB
+      return view.getUint16(1);
     }
   }
 
-  public async setDpi(value: number): Promise<number> {
+  public async setDpi(sensorIndex: number, value: number): Promise<number> {
     await this.hidpp.getVersion();
 
     if (this.hidpp.version === 1) {
@@ -71,15 +84,16 @@ export class AdjustableDpi {
       const { index: featureIndex } = await this.hidpp.getFeature(0x2201);
       const data = new ArrayBuffer(3);
       let view = new DataView(data);
+      view.setUint8(0, sensorIndex);
       view.setUint16(1, value);
       const response = await this.hidpp.request(
         0x11,
         featureIndex,
-        0x3, // SetSensorDpi
+        0x3,
         data
       );
       view = new DataView(response);
-      return view.getUint16(1); // SensorId, DpiMSB, DpiLSB
+      return view.getUint16(1);
     }
   }
 }

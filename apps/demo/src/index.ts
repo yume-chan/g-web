@@ -61,29 +61,36 @@ async function openDevice(device: HIDDevice) {
 
     try {
       const dpi = new AdjustableDpi(device);
-      const dpiList = await dpi.getDpiList();
-      console.log(dpiList);
-      const currentDpi = await dpi.getDpi();
-      console.log(currentDpi);
+      const sensorCount = await dpi.getSensorCount();
+      console.log('sensorCount', sensorCount);
 
-      const div = document.createElement('div');
-      div.textContent = `DPI: `;
+      for (let i = 0; i < sensorCount; i += 1) {
+        const index = i;
 
-      const select = document.createElement('select');
-      for (const value of dpiList) {
-        const option = document.createElement('option');
-        option.value = value.toString();
-        option.innerText = value.toString();
-        select.appendChild(option);
+        const dpiList = await dpi.getDpiList(index);
+        console.log(dpiList);
+        const currentDpi = await dpi.getDpi(index);
+        console.log(currentDpi);
+
+        const div = document.createElement('div');
+        div.textContent = `Sensor ${index} DPI: `;
+
+        const select = document.createElement('select');
+        for (const value of dpiList) {
+          const option = document.createElement('option');
+          option.value = value.toString();
+          option.innerText = value.toString();
+          select.appendChild(option);
+        }
+        select.value = currentDpi.toString();
+        select.onchange = async () => {
+          console.log(select.value);
+          await dpi.setDpi(index, parseInt(select.value, 10));
+        };
+
+        div.appendChild(select);
+        settings.appendChild(div);
       }
-      select.value = currentDpi.toString();
-      select.onchange = async () => {
-        console.log(select.value);
-        await dpi.setDpi(parseInt(select.value, 10));
-      };
-
-      div.appendChild(select);
-      settings.appendChild(div);
     } catch { }
 
     try {
