@@ -11,21 +11,23 @@ Current state:
 ## Limitations
 
 1. Due to security concerns, it can't detect and connect to devices automatically. Users must select their devices from a browser-provided popup to permit the connection.
-2. Because it runs in browser, it won't support certain custom key mapping features like macro or launching programs.
+2. Because it runs in browser, it won't support certain custom key mapping features (divert mode) like macro or launching programs.
 
 ## Roadmap
 
 ### General
 
 - [x] Device name
-- [ ] Battery level
+- [x] Device type
+- [x] Battery level
 - [ ] Receiver pairing
 
 ### Mouse
 
-- [x] DPI (no multiple DPI)
+- [x] DPI
 - [x] Report rate
 - [ ] Button remapping
+- [ ] Gesture
 
 ### Keyboard
 

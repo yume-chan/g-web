@@ -10,7 +10,7 @@ export class FriendlyName {
   }
 
   async getFriendlyNameLength(): Promise<{ nameLength: number; nameMaxLength: number; defaultNameLength: number; }> {
-    const featureIndex = await this.hidpp.getFeatureIndex(0x0007);
+    const { index: featureIndex } = await this.hidpp.getFeature(0x0007);
     const response = await this.hidpp.request(
       0x11,
       featureIndex,
@@ -25,7 +25,7 @@ export class FriendlyName {
   }
 
   async getDefaultFriendlyName(): Promise<string> {
-    const featureIndex = await this.hidpp.getFeatureIndex(0x0007);
+    const { index: featureIndex } = await this.hidpp.getFeature(0x0007);
     const { defaultNameLength } = await this.getFriendlyNameLength();
     let buffer = new Uint8Array(defaultNameLength);
     for (let i = 0; i < defaultNameLength; i += 15) {

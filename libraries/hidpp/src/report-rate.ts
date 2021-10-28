@@ -8,7 +8,7 @@ export class ReportRate {
   }
 
   async getReportRateList(): Promise<number[]> {
-    const featureIndex = await this.hidpp.getFeatureIndex(0x8060);
+    const { index: featureIndex } = await this.hidpp.getFeature(0x8060);
     const response = await this.hidpp.request(
       0x11,
       featureIndex,
@@ -26,7 +26,7 @@ export class ReportRate {
   }
 
   async getReportRate(): Promise<number> {
-    const featureIndex = await this.hidpp.getFeatureIndex(0x8060);
+    const { index: featureIndex } = await this.hidpp.getFeature(0x8060);
     const response = await this.hidpp.request(
       0x11,
       featureIndex,
@@ -37,7 +37,7 @@ export class ReportRate {
   }
 
   async setReportRate(value: number): Promise<void> {
-    const featureIndex = await this.hidpp.getFeatureIndex(0x8060);
+    const { index: featureIndex } = await this.hidpp.getFeature(0x8060);
     await this.hidpp.request(
       0x11,
       featureIndex,

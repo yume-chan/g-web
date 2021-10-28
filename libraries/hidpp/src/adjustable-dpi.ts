@@ -13,7 +13,7 @@ export class AdjustableDpi {
     if (this.hidpp.version === 1) {
       throw new Error('Not Implemented');
     } else {
-      const featureIndex = await this.hidpp.getFeatureIndex(0x2201);
+      const { index: featureIndex } = await this.hidpp.getFeature(0x2201);
       const response = await this.hidpp.request(
         0x11,
         featureIndex,
@@ -51,7 +51,7 @@ export class AdjustableDpi {
     if (this.hidpp.version === 1) {
       throw new Error('Not Implemented');
     } else {
-      const featureIndex = await this.hidpp.getFeatureIndex(0x2201);
+      const { index: featureIndex } = await this.hidpp.getFeature(0x2201);
       const response = await this.hidpp.request(
         0x11,
         featureIndex,
@@ -68,7 +68,7 @@ export class AdjustableDpi {
     if (this.hidpp.version === 1) {
       throw new Error('Not Implemented');
     } else {
-      const featureIndex = await this.hidpp.getFeatureIndex(0x2201);
+      const { index: featureIndex } = await this.hidpp.getFeature(0x2201);
       const data = new ArrayBuffer(3);
       let view = new DataView(data);
       view.setUint16(1, value);

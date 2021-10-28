@@ -2,6 +2,18 @@ import { Hidpp } from "./hidpp";
 
 const textDecoder = new TextDecoder();
 
+export enum DeviceType {
+  Keyboard,
+  RemoteControl,
+  Numpad,
+  Mouse,
+  TouchPad,
+  Trackball,
+  Presenter,
+  Remote,
+  Receiver,
+}
+
 export class TypeAndName {
   hidpp: Hidpp;
 
@@ -9,8 +21,8 @@ export class TypeAndName {
     this.hidpp = hidpp;
   }
 
-  async getDeviceNameLength(): Promise<number> {
-    const featureIndex = await this.hidpp.getFeatureIndex(0x0005);
+  async getNameLength(): Promise<number> {
+    const { index: featureIndex } = await this.hidpp.getFeature(0x0005);
     const response = await this.hidpp.request(
       0x11,
       featureIndex,
@@ -20,9 +32,9 @@ export class TypeAndName {
     return view[0];
   }
 
-  async getDeviceName(): Promise<string> {
-    const featureIndex = await this.hidpp.getFeatureIndex(0x0005);
-    const nameLength = await this.getDeviceNameLength();
+  async getName(): Promise<string> {
+    const { index: featureIndex } = await this.hidpp.getFeature(0x0005);
+    const nameLength = await this.getNameLength();
     let buffer = new Uint8Array(nameLength);
     for (let i = 0; i < nameLength; i += 16) {
       const response = await this.hidpp.request(
@@ -34,5 +46,16 @@ export class TypeAndName {
       buffer.set(new Uint8Array(response, 0, Math.min(nameLength - i, 16)), i);
     }
     return textDecoder.decode(buffer);
+  }
+
+  async getType(): Promise<DeviceType> {
+    const { index: featureIndex } = await this.hidpp.getFeature(0x0005);
+    const response = await this.hidpp.request(
+      0x11,
+      featureIndex,
+      0x2,
+    );
+    const view = new Uint8Array(response);
+    return view[0];
   }
 }

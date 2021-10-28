@@ -1,4 +1,4 @@
-import { AdjustableDpi, Hidpp, Receiver, ReportRate, requestDevice, isHidppDevice, TypeAndName } from "@yume-chan/hidpp";
+import { AdjustableDpi, Hidpp, Receiver, ReportRate, requestDevice, isHidppDevice, TypeAndName, BatteryStatus, BatteryChargeStatus, DeviceType } from "@yume-chan/hidpp";
 
 const settings = document.getElementById('settings') as HTMLDivElement;
 
@@ -39,8 +39,27 @@ async function openDevice(device: HIDDevice) {
     // const friendlyName = new FriendlyName(device);
     // name.textContent = await friendlyName.getDefaultFriendlyName();
     const typeAndName = new TypeAndName(device);
-    name.textContent = await typeAndName.getDeviceName();
+    name.textContent = await typeAndName.getName();
     settings.appendChild(name);
+
+    {
+      const div = document.createElement('div');
+      div.textContent = `Type: ${DeviceType[await typeAndName.getType()]}`;
+      settings.appendChild(div);
+    }
+
+    try {
+      const battery = new BatteryStatus(device);
+      const { percentage, status } = await battery.getBattery();
+
+      const div = document.createElement('div');
+      div.textContent = `Battery:  ${percentage}% Status: ${BatteryChargeStatus[status]}`;
+      settings.appendChild(div);
+
+      console.log('battery', percentage, status);
+    } catch {
+      console.log(name, 'does not support battery');
+    }
 
     try {
       const dpi = new AdjustableDpi(device);

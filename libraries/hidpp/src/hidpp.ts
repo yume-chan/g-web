@@ -68,7 +68,7 @@ export class Hidpp {
 
   private _mutex = new Mutex();
   private _request: { command: number, address: number, resolver: PromiseResolver<ArrayBuffer>; } | undefined;
-  private _featureIdToIndex: Record<number, number> = {};
+  private _featureIdToIndex: Record<number, { index: number, version: number; }> = {};
 
   constructor(device: HIDDevice, index: number, receiver?: Hidpp) {
     this.device = device;
@@ -200,7 +200,7 @@ export class Hidpp {
     }
   }
 
-  public async getFeatureIndex(featureId: number) {
+  public async getFeature(featureId: number) {
     await this.getVersion();
     if (this.version === 1) {
       throw new Error('Feature not supported in HID++ 1.0');
@@ -211,22 +211,28 @@ export class Hidpp {
     }
 
     const data = new ArrayBuffer(2);
-    let view = new DataView(data);
-    view.setUint16(0, featureId);
+    {
+      const view = new DataView(data);
+      view.setUint16(0, featureId);
+    }
 
     const response = await this.request(
       0x11,
-      0, // Root
-      0, // GetFeature
+      0x0000, // Root
+      0x0, // GetFeature
       data,
     );
-    const featureIndex = new Uint8Array(response)[0];
-    if (featureIndex === 0) {
+    const view = new Uint8Array(response);
+
+    const index = view[0];
+    if (index === 0) {
       throw new Error('Feature not supported');
     }
 
-    this._featureIdToIndex[featureId] = featureIndex;
-    return featureIndex;
+    const version = view[2];
+
+    this._featureIdToIndex[featureId] = { index, version };
+    return { index, version };
   }
 
   public async request(
