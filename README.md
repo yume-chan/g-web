@@ -20,7 +20,14 @@ Current state:
 - [x] Device name
 - [x] Device type
 - [x] Battery level
-- [ ] Receiver pairing
+  - [x] v0
+  - [ ] v1 (partially done)
+  - [x] v4
+
+### Receiver
+
+- [x] Device detection
+- [ ] Pair
 
 ### Mouse
 
@@ -28,6 +35,7 @@ Current state:
 - [x] Report rate
 - [ ] Button remapping
 - [ ] Gesture
+- [ ] **R!G!B!**
 
 ### Keyboard
 
