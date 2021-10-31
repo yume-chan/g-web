@@ -1,4 +1,4 @@
-import { AdjustableDpi, Hidpp, Receiver, ReportRate, requestDevice, isHidppDevice, TypeAndName, BatteryStatus, Battery, DeviceType, BatteryLevelV4, FeatureSet, BatteryStatusV1 } from "@yume-chan/hidpp";
+import { AdjustableDpi, Hidpp, Receiver, ReportRate, requestDevice, isHidppDevice, TypeAndName, BatteryStatus, Battery, DeviceType, BatteryLevelV4, FeatureSet, BatteryStatusV1, FirmwareInfo, FirmwareType } from "@yume-chan/hidpp";
 
 const root = document.getElementById('root') as HTMLDivElement;
 
@@ -9,7 +9,7 @@ async function openHidppDevice(device: Hidpp) {
   console.log(device);
 
   // Assume all HID++ 1.0 devices are USB receivers
-  // (mouses/keyboards started using HID++ 2.0 a long time ago)
+  // (mouses/keyboards started using HID++ 2.0 since 2013)
   if (device.version === 1) {
     const receiver = new Receiver(device);
     console.log(receiver);
@@ -50,11 +50,136 @@ async function openHidppDevice(device: Hidpp) {
 
     let i = 0;
     for await (const feature of featureSet.getFeatures()) {
-      div.textContent += `0x${i.toString(16)}=0x${feature.toString(16).padStart(4, '0')} `;
+      const id = `0x${feature.id.toString(16).padStart(4, '0')}`;
+      const div = document.createElement('div');
+      const FEATURE_NAMES: Record<string, string> = {
+        '0x0000': 'Root',
+        '0x0001': 'Feature Set',
+        '0x0002': "Feature Info",
+        '0x0003': 'Firmware Info',
+        '0x0004': 'Device Unit ID',
+        '0x0005': 'Device Name',
+        '0x0006': 'Device Groups',
+        '0x0007': 'Device Friendly Name',
+        '0x0008': 'Keep Alive',
+        '0x0020': 'Config Change',
+        '0x0021': 'Crypto ID',
+        '0x0040': 'Target Software',
+        '0x0080': 'Wireless Signal Strength',
+        '0x00c0': 'DFU Control v0',
+        '0x00c1': 'DFU Control v1',
+        '0x00c2': 'DFU Control v2',
+        '0x00d0': 'DFU',
+        '0x1000': 'Battery v0',
+        '0x1001': 'Battery v1',
+        '0x1004': 'Battery v4',
+        '0x1010': 'Charging Control',
+        '0x1300': 'LED Control',
+        '0x1800': 'Generic Test',
+        '0x1802': 'Device Reset',
+        '0x1805': 'OOB State',
+        '0x1806': 'Configurable Device Properties',
+        '0x1014': 'Change Host',
+        '0x1015': 'Hosts Info',
+        '0x1981': 'Keyboard Backlight v1',
+        '0x1982': 'Keyboard Backlight v2',
+        '0x1983': 'Keyboard Backlight v3',
+        '0x1a00': 'Presenter Control',
+        '0x1b00': 'Reprogrammable Control v0',
+        '0x1b01': 'Reprogrammable Control v1',
+        '0x1b02': 'Reprogrammable Control v2',
+        '0x1b03': 'Reprogrammable Control v3',
+        '0x1b04': 'Reprogrammable Control v4',
+        '0x1bc0': 'Report HID Usages',
+        '0x1c00': 'Persistent Remappable Action',
+        '0x1d4b': 'Wireless Status',
+        '0x1df0': 'Remaining Pairing',
+        '0x1e00': 'Enable Hidden Features',
+        '0x1f1f': 'Firmware Properties',
+        '0x0f20': 'ADC Measurement',
+        '0x2001': 'Button Swap',
+        '0x2005': 'Button Swap Cancel',
+        '0x2006': 'Pointer Axis Orientation',
+        '0x2100': 'Vertical Scrolling',
+        '0x2110': 'Smart Shift v0',
+        '0x2111': 'Smart Shift v1',
+        '0x2120': 'Hi-Res Wheel v0',
+        '0x2121': 'Hi-Res Wheel v1',
+        '0x2130': 'Ratchet Wheel',
+        '0x2150': 'Thumb Wheel',
+        '0x2200': 'Mouse Pointer',
+        '0x2201': 'Adjustable DPI',
+        '0x2205': 'Pointer Motion Scaling',
+        '0x2230': 'Angle Snapping',
+        '0x2240': 'Surface Tuning',
+        '0x2250': 'XY Stats',
+        '0x2251': 'Wheel Stats',
+        '0x2400': 'Hybrid Tracking',
+        '0x40a0': 'Fn Inversion v0',
+        '0x40a2': 'Fn Inversion v2',
+        '0x40a3': 'Fn Inversion v3',
+        '0x4100': 'Encryption',
+        '0x4220': 'Lock Key State',
+        '0x4301': 'Solar Dashboard',
+        '0x4520': 'Keyboard Layout',
+        '0x4521': 'Disable Keys',
+        '0x4522': 'Disable Keys By Usage',
+        '0x4530': 'Dual Platform',
+        '0x4531': 'Multi Platform',
+        '0x4540': 'Keyboard Layout 2',
+        '0x4600': 'Crown',
+        '0x6010': 'TouchPad Firmware Items',
+        '0x6011': 'TouchPad Software Items',
+        '0x6012': 'TouchPad Windows 8 Firmware Items',
+        '0x6020': 'Tap Enabled v0',
+        '0x6021': 'Tap Enabled v1',
+        '0x6030': 'Cursor Ballistic',
+        '0x6040': 'TouchPad Resolution',
+        '0x6100': 'TouchPad Raw XY',
+        '0x6110': 'Touch Mouse Raw Points',
+        '0x6500': 'TouchPad Gestures v0',
+        '0x6501': 'TouchPad Gestures v1',
+        '0x8040': 'Brightness Control',
+        '0x8060': 'Adjustable Report Rate',
+        '0x8070': 'Color LED Effects',
+        '0x8071': 'RGB Effects',
+        '0x8080': 'Per Key Lighting v0',
+        '0x8081': 'Per Key Lighting v1',
+        '0x8090': 'Mode Status',
+        '0x8100': 'On-board Profiles',
+        '0x8110': 'Mouse Button Spy',
+        '0x8111': 'Latency Monitoring',
+        '0x8120': 'Gaming Attachments',
+        '0x8123': 'Force Feedback',
+        '0x8300': 'Side Tone',
+        '0x8310': 'Equalizer',
+        '0x8320': 'Headset Out',
+      };
+      const flags: string[] = [];
+      if (feature.obsolete) {
+        flags.push('obsolete');
+      }
+      if (feature.hidden) {
+        flags.push('hidden');
+      }
+      if (feature.internal) {
+        flags.push('internal');
+      }
+      div.textContent = `Feature 0x${i.toString(16)}: ${id}${FEATURE_NAMES[id] ? ` ${FEATURE_NAMES[id]}` : ''}${flags.length ? ` (${flags.join(', ')})` : ''}`;
+      container.appendChild(div);
       i += 1;
     }
+  } catch { }
 
-    container.appendChild(div);
+  try {
+    const firmwareInfo = new FirmwareInfo(device);
+    const count = await firmwareInfo.getFirmwareCount();
+    for (let i = 0; i < count; i += 1) {
+      const firmware = await firmwareInfo.getFirmwareVersion(i);
+      const div = document.createElement('div');
+      div.textContent = `Firmware ${i}: ${FirmwareType[firmware.type] ?? 'Unknown'}${firmware.name ? ` ${firmware.name}` : ''} ${firmware.major.toString(16)}.${firmware.minor.toString(16)}.${firmware.build.toString(16)}`;
+      container.appendChild(div);
+    }
   } catch { }
 
   try {
@@ -73,7 +198,7 @@ async function openHidppDevice(device: Hidpp) {
     console.log('battery', voltage, flags, status);
 
     const div = document.createElement('div');
-    div.textContent = `Battery: ${voltage}mV, ${BatteryStatusV1[flags]}`;
+    div.textContent = `Battery: ${voltage}mV, ${BatteryStatusV1[flags] ?? 'Discharging'}`;
     container.appendChild(div);
   } catch { }
 

@@ -18,7 +18,7 @@ export class FeatureSet {
     return view[0];
   }
 
-  async *getFeatures(): AsyncGenerator<number, void, void> {
+  async *getFeatures(): AsyncGenerator<{ id: number, obsolete: boolean, hidden: boolean, internal: boolean; }, void, void> {
     const featureCount = await this.getFeatureCount();
     const { index: featureIndex } = await this.hidpp.getFeature(0x0001);
     for (let i = 0; i <= featureCount; i += 1) {
@@ -29,7 +29,14 @@ export class FeatureSet {
         new Uint8Array([i]).buffer,
       );
       const view = new DataView(response);
-      yield view.getUint16(0);
+      const id = view.getUint16(0);
+      const flags = view.getUint8(2);
+      yield {
+        id,
+        obsolete: (flags & (1 << 7)) !== 0,
+        hidden: (flags & (1 << 6)) !== 0,
+        internal: (flags & (1 << 5)) !== 0,
+      };
     }
   }
 }
