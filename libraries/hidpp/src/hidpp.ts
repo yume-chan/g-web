@@ -25,7 +25,7 @@ export enum Hidpp1ErrorCode {
   WrongPinCode
 }
 
-export const Hidpp1ErrorMessages: Record<Hidpp1ErrorCode, string> = {
+export const Hidpp1ErrorMessage: Record<Hidpp1ErrorCode, string> = {
   [Hidpp1ErrorCode.Success]: 'No error',
   [Hidpp1ErrorCode.InvalidCommand]: 'Invalid command',
   [Hidpp1ErrorCode.InvalidAddress]: 'Invalid address',
@@ -39,6 +39,28 @@ export const Hidpp1ErrorMessages: Record<Hidpp1ErrorCode, string> = {
   [Hidpp1ErrorCode.RequestUnavailable]: 'Request not valid in current context',
   [Hidpp1ErrorCode.InvalidParamValue]: 'Request parameter has unsupported value',
   [Hidpp1ErrorCode.WrongPinCode]: 'The PIN code entered on the device was wrong',
+};
+
+export enum Hidpp2ErrorCode {
+  InvalidArgument = 0x02,
+  OutOfRange,
+  HardwareError,
+  LogitechInternal,
+  InvalidFeatureIndex,
+  InvalidFunction,
+  Busy,
+  Unsupported,
+}
+
+export const Hidpp2ErrorMessage: Record<Hidpp2ErrorCode, string> = {
+  [Hidpp2ErrorCode.InvalidArgument]: 'Invalid Argument',
+  [Hidpp2ErrorCode.OutOfRange]: 'Out of Range',
+  [Hidpp2ErrorCode.HardwareError]: 'Hardware Error',
+  [Hidpp2ErrorCode.LogitechInternal]: 'Internal Error',
+  [Hidpp2ErrorCode.InvalidFeatureIndex]: 'Invalid Feature Index',
+  [Hidpp2ErrorCode.InvalidFunction]: 'Invalid Function',
+  [Hidpp2ErrorCode.Busy]: 'Device Busy',
+  [Hidpp2ErrorCode.Unsupported]: 'Unsupported',
 };
 
 export function concatArrayBuffers(...args: (ArrayBuffer | undefined)[]) {
@@ -130,16 +152,32 @@ export class Hidpp {
         const errorCode = view[4] as Hidpp1ErrorCode;
 
         if (DEBUG) {
-          console.error(`error ${command.toString(16)} ${address.toString(16)} ${Hidpp1ErrorMessages[errorCode]}`);
+          console.error(`error ${command.toString(16)} ${address.toString(16)} ${Hidpp1ErrorMessage[errorCode]}`);
         }
 
-        const error = new Error(Hidpp1ErrorMessages[errorCode]);
+        const error = new Error(Hidpp1ErrorMessage[errorCode] ?? 'Hidpp 1 Error');
         error.name = 'Hidpp1Error';
         (error as any).code = errorCode;
         request.resolver.reject(error);
         this._request = undefined;
       }
       return;
+    } else if (command === 0xff) {
+      command = view[2];
+      const address = view[3];
+      if (request.command === command && request.address === address) {
+        const errorCode = view[4] as Hidpp2ErrorCode;
+
+        if (DEBUG) {
+          console.error(`error ${command.toString(16)} ${address.toString(16)} ${Hidpp2ErrorMessage[errorCode]}`);
+        }
+
+        const error = new Error(Hidpp2ErrorMessage[errorCode] ?? 'Hidpp 2 Error');
+        error.name = 'Hidpp2Error';
+        (error as any).code = errorCode;
+        request.resolver.reject(error);
+        this._request = undefined;
+      }
     }
 
     const address = view[2];

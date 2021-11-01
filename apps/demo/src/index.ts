@@ -27,6 +27,7 @@ async function openHidppDevice(device: Hidpp) {
   // name.textContent = await friendlyName.getDefaultFriendlyName();
 
   const container = document.createElement('div');
+  root.appendChild(container);
 
   device.onDisconnect(() => {
     container.remove();
@@ -41,7 +42,7 @@ async function openHidppDevice(device: Hidpp) {
     div = document.createElement('div');
     div.textContent = `Type: ${DeviceType[await typeAndName.getType()]}`;
     container.appendChild(div);
-  } catch { }
+  } catch (e) { console.log(e); }
 
   try {
     const featureSet = new FeatureSet(device);
@@ -169,18 +170,34 @@ async function openHidppDevice(device: Hidpp) {
       container.appendChild(div);
       i += 1;
     }
-  } catch { }
+  } catch (e) { console.log(e); }
 
   try {
     const firmwareInfo = new FirmwareInfo(device);
-    const count = await firmwareInfo.getFirmwareCount();
-    for (let i = 0; i < count; i += 1) {
-      const firmware = await firmwareInfo.getFirmwareVersion(i);
+    const deviceInfo = await firmwareInfo.getDeviceInfo();
+    console.error(deviceInfo);
+    for (let i = 0; i < deviceInfo.entityCount; i += 1) {
+      const firmware = await firmwareInfo.getFirmwareInfo(i);
       const div = document.createElement('div');
-      div.textContent = `Firmware ${i}: ${FirmwareType[firmware.type] ?? 'Unknown'}${firmware.name ? ` ${firmware.name}` : ''} ${firmware.major.toString(16)}.${firmware.minor.toString(16)}.${firmware.build.toString(16)}`;
+      div.textContent = [
+        `Firmware ${i}:`,
+        FirmwareType[firmware.type] ?? 'Unknown',
+        firmware.name,
+        `${firmware.major.toString(16)}.${firmware.minor.toString(16)}.${firmware.build.toString(16)}`,
+        firmware.active ? ' (active)' : '',
+        firmware.pid ? ` pid=${firmware.pid.toString(16).padStart(2, '0')}` : '',
+      ].filter(Boolean).join(' ');
       container.appendChild(div);
     }
-  } catch { }
+
+    let serialNumber = deviceInfo.unitId.toString(16).padStart(8, '0');
+    if (deviceInfo.supportSerialNumber) {
+      serialNumber = await firmwareInfo.getSerialNumber();
+    }
+    const div = document.createElement('div');
+    div.textContent = `Serial Number: ${serialNumber}`;
+    container.appendChild(div);
+  } catch (e) { console.error(e); }
 
   try {
     const battery = new Battery(device);
@@ -190,7 +207,7 @@ async function openHidppDevice(device: Hidpp) {
     const div = document.createElement('div');
     div.textContent = `Battery: about ${percentage}%, ${BatteryStatus[status]}`;
     container.appendChild(div);
-  } catch { }
+  } catch (e) { console.log(e); }
 
   try {
     const battery = new Battery(device);
@@ -200,7 +217,7 @@ async function openHidppDevice(device: Hidpp) {
     const div = document.createElement('div');
     div.textContent = `Battery: ${voltage}mV, ${BatteryStatusV1[flags] ?? 'Discharging'}`;
     container.appendChild(div);
-  } catch { }
+  } catch (e) { console.log(e); }
 
   try {
     const battery = new Battery(device);
@@ -210,7 +227,7 @@ async function openHidppDevice(device: Hidpp) {
     const div = document.createElement('div');
     div.textContent = `Battery: ${percentage ? `${percentage}%` : BatteryLevelV4[level]}, ${BatteryStatus[status]}`;
     container.appendChild(div);
-  } catch { }
+  } catch (e) { console.log(e); }
 
   try {
     const dpi = new AdjustableDpi(device);
@@ -241,7 +258,7 @@ async function openHidppDevice(device: Hidpp) {
       div.appendChild(select);
       container.appendChild(div);
     }
-  } catch { }
+  } catch (e) { console.log(e); }
 
   try {
     const reportRate = new ReportRate(device);
@@ -266,9 +283,7 @@ async function openHidppDevice(device: Hidpp) {
 
     div.appendChild(select);
     container.appendChild(div);
-  } catch { }
-
-  root.appendChild(container);
+  } catch (e) { console.log(e); }
 }
 
 async function openHidDevice(device: HIDDevice) {
