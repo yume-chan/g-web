@@ -214,11 +214,8 @@ async function openHidppDevice(device: Hidpp) {
     const { voltage, flags } = await battery.getBatteryV1();
     console.log('battery', voltage, flags);
 
-    // curve fit from https://drive.google.com/file/d/1F_fuqL0-TbZ77u0suXRcj3YcDidCcN1M/view
-    const soc = ((x) => 11.111 * x ** 6 - 33.484 * x ** 5 + 37.664 * x ** 4 - 18.819 * x ** 3 + 3.9504 * x ** 2 + 0.1167 * x + 3.6363)(voltage);
-
     const div = document.createElement('div');
-    div.textContent = `Battery: ${voltage}mV (~${soc}%), ${BatteryStatusV1[flags] ?? 'Discharging'}`;
+    div.textContent = `Battery: ${voltage}mV, ${BatteryStatusV1[flags] ?? 'Discharging'}`;
     container.appendChild(div);
   } catch (e) { console.log(e); }
 
