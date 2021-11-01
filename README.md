@@ -21,13 +21,14 @@ Current state:
 - [x] Device type
 - [x] Battery level
   - [x] v0
-  - [ ] v1 (partially done)
+  - [x] v1
   - [x] v4
 
 ### Receiver
 
-- [x] Device detection
-- [ ] Pair
+- [x] List connected devices
+- [ ] List paired devices
+- [ ] Pair new devices
 
 ### Mouse
 
