@@ -7,11 +7,18 @@ export enum DeviceType {
   RemoteControl,
   Numpad,
   Mouse,
-  TouchPad,
+  TrackPad,
   Trackball,
   Presenter,
-  Remote,
   Receiver,
+  Headset,
+  Webcam,
+  SteeringWheel,
+  Joystick,
+  Gamepad,
+  Dock,
+  Speaker,
+  Microphone,
 }
 
 export class TypeAndName {
