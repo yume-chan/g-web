@@ -103,7 +103,7 @@ export class Hidpp {
     this.receiver = receiver;
 
     if (this.index === 0xff) {
-      this.device.addEventListener('inputreport', this.handleInputReport);
+      this.device.addEventListener('inputreport', this.handleRawInputReport);
     }
 
     if (this.receiver) {
@@ -117,7 +117,18 @@ export class Hidpp {
     }
   }
 
-  handleInputReport = ({ data }: { data: DataView; }) => {
+  handleRawInputReport = ({ reportId, data }: HIDInputReportEvent) => {
+    if (reportId === 0x10 || reportId === 0x11) {
+      this.handleInputReport(data);
+    } else if (DEBUG) {
+      console.log(
+        `raw input message 0x${reportId.toString(16)}`,
+        Array.from(new Uint8Array(data.buffer))
+      );
+    }
+  };
+
+  handleInputReport = (data: DataView) => {
     const view = new Uint8Array(data.buffer);
 
     const deviceIndex = view[0];
@@ -127,7 +138,7 @@ export class Hidpp {
       const address = view[2];
       const slice = data.buffer.slice(3);
       console.log(
-        `raw message ${deviceIndex} 0x${command.toString(16).padStart(2, '0')} 0x${address.toString(16).padStart(2, '0')}`,
+        `input message ${deviceIndex} 0x${command.toString(16).padStart(2, '0')} 0x${address.toString(16).padStart(2, '0')}`,
         Array.from(new Uint8Array(slice))
       );
     }

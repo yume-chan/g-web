@@ -17,35 +17,42 @@ export class Receiver {
     this.hidpp.device.addEventListener('inputreport', this.handleInputReport);
   }
 
-  private handleInputReport = ({ data }: HIDInputReportEvent) => {
-    const view = new Uint8Array(data.buffer);
+  private handleInputReport = ({ reportId, data }: HIDInputReportEvent) => {
+    if (reportId === 0x10 || reportId === 0x11) {
+      const view = new Uint8Array(data.buffer);
 
-    const deviceIndex = view[0];
-    if (deviceIndex !== 0xff) {
-      const command = view[1];
-      if (command === 0x41) {
-        // Device connected/disconnected
-        if ((view[3] & (1 << 6)) === 0) {
-          if (!this.children[deviceIndex]) {
-            this.childConnectEvent.fire(this.getChild(deviceIndex));
+      const deviceIndex = view[0];
+      if (deviceIndex !== 0xff) {
+        const command = view[1];
+        if (command === 0x41) {
+          // Device connected/disconnected
+          if ((view[3] & (1 << 6)) === 0) {
+            if (!this.children[deviceIndex]) {
+              this.childConnectEvent.fire(this.getChild(deviceIndex));
+            }
+          } else {
+            if (this.children[deviceIndex]) {
+              this.childDisconnectEvent.fire(this.getChild(deviceIndex));
+              delete this.children[deviceIndex];
+            }
           }
-        } else {
-          if (this.children[deviceIndex]) {
-            this.childDisconnectEvent.fire(this.getChild(deviceIndex));
-            delete this.children[deviceIndex];
-          }
+          return;
         }
-        return;
-      }
 
-      this.children[deviceIndex]?.handleInputReport({ data });
+        this.children[deviceIndex]?.handleInputReport(data);
+      } else {
+        const command = view[1];
+        const address = view[2];
+        const slice = data.buffer.slice(3);
+        console.log(
+          `input message ${deviceIndex} 0x${command.toString(16).padStart(2, '0')} 0x${address.toString(16).padStart(2, '0')}`,
+          Array.from(new Uint8Array(slice))
+        );
+      }
     } else {
-      const command = view[1];
-      const address = view[2];
-      const slice = data.buffer.slice(3);
       console.log(
-        `raw message ${deviceIndex} 0x${command.toString(16).padStart(2, '0')} 0x${address.toString(16).padStart(2, '0')}`,
-        Array.from(new Uint8Array(slice))
+        `raw input message 0x${reportId.toString(16)}`,
+        Array.from(new Uint8Array(data.buffer))
       );
     }
   };
