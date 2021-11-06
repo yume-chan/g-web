@@ -97,7 +97,7 @@ async function openHidppDevice(device: Hidpp) {
         '0x1df0': 'Remaining Pairing',
         '0x1e00': 'Enable Hidden Features',
         '0x1f1f': 'Firmware Properties',
-        '0x0f20': 'ADC Measurement',
+        '0x1f20': 'ADC Measurement',
         '0x2001': 'Button Swap',
         '0x2005': 'Button Swap Cancel',
         '0x2006': 'Pointer Axis Orientation',
