@@ -1,4 +1,4 @@
-import { AdjustableDpi, Hidpp, Receiver, ReportRate, requestDevice, isHidppDevice, TypeAndName, BatteryStatus, Battery, DeviceType, BatteryLevelV4, FeatureSet, BatteryStatusV1, FirmwareInfo, FirmwareType } from "@yume-chan/hidpp";
+import { AdjustableDpi, Battery, BatteryLevel1004, BatteryStatus1000, BatteryStatus1001, BatteryStatus1f20, DeviceType, FeatureSet, FirmwareInfo, FirmwareType, Hidpp, isHidppDevice, Receiver, ReportRate, requestDevice, TypeAndName } from "@yume-chan/hidpp";
 
 const root = document.getElementById('root') as HTMLDivElement;
 
@@ -140,6 +140,7 @@ async function openHidppDevice(device: Hidpp) {
         '0x6110': 'Touch Mouse Raw Points',
         '0x6500': 'TouchPad Gestures v0',
         '0x6501': 'TouchPad Gestures v1',
+        '0x8010': 'G-key',
         '0x8040': 'Brightness Control',
         '0x8060': 'Adjustable Report Rate',
         '0x8070': 'Color LED Effects',
@@ -201,31 +202,40 @@ async function openHidppDevice(device: Hidpp) {
 
   try {
     const battery = new Battery(device);
-    const { percentage, nextPercentage, status } = await battery.getBattery();
-    console.log('battery', percentage, nextPercentage, status);
+    const { level, nextLevel, status } = await battery.getBattery1000();
+    console.log('battery', level, nextLevel, status);
 
     const div = document.createElement('div');
-    div.textContent = `Battery: about ${percentage}%, ${BatteryStatus[status]}`;
+    div.textContent = `Battery: about ${level}%, ${BatteryStatus1000[status]}`;
     container.appendChild(div);
   } catch (e) { console.log(e); }
 
   try {
     const battery = new Battery(device);
-    const { voltage, flags } = await battery.getBatteryV1();
-    console.log('battery', voltage, flags);
+    const { voltage, status } = await battery.getBattery1001();
+    console.log('battery', voltage, status);
 
     const div = document.createElement('div');
-    div.textContent = `Battery: ${voltage}mV, ${BatteryStatusV1[flags] ?? 'Discharging'}`;
+    div.textContent = `Battery: ${voltage}mV (~${Battery.mapVoltageToSoc(voltage)}%), ${BatteryStatus1001[status] ?? 'Discharging'}`;
     container.appendChild(div);
   } catch (e) { console.log(e); }
 
   try {
     const battery = new Battery(device);
-    const { percentage, level, status } = await battery.getBatteryV4();
+    const { percentage, level, status } = await battery.getBattery1004();
     console.log('battery', percentage, level, status);
 
     const div = document.createElement('div');
-    div.textContent = `Battery: ${percentage ? `${percentage}%` : BatteryLevelV4[level]}, ${BatteryStatus[status]}`;
+    div.textContent = `Battery: ${percentage ? `${percentage}%` : BatteryLevel1004[level]}, ${BatteryStatus1000[status]}`;
+    container.appendChild(div);
+  } catch (e) { console.log(e); }
+
+  try {
+    const battery = new Battery(device);
+    const { voltage, status } = await battery.getBattery1f20();
+
+    const div = document.createElement('div');
+    div.textContent = `Battery: ${voltage}mV (~${Battery.mapVoltageToSoc(voltage)}%), ${BatteryStatus1f20[status]}`;
     container.appendChild(div);
   } catch (e) { console.log(e); }
 
