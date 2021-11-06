@@ -20,9 +20,10 @@ Current state:
 - [x] Device name
 - [x] Device type
 - [x] Battery level
-  - [x] v0
-  - [x] v1
-  - [x] v4
+  - [x] 0x1000
+  - [x] 0x1001
+  - [x] 0x1004
+  - [x] 0x1f20
 
 ### Receiver
 
