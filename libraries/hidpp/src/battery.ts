@@ -27,9 +27,9 @@ export enum BatteryLevel1004 {
 
 export enum BatteryStatus1f20 {
   Discharging = 0x01,
-  Charging = 0x02,
-  ChargingComplete = 0x02 | 0x04,
-  ChargingFault = 0x02 | 0x08,
+  Charging = BatteryStatus1f20.Discharging | 0x02,
+  ChargingComplete = BatteryStatus1f20.Charging | 0x04,
+  ChargingFault = BatteryStatus1f20.Charging | 0x08,
 }
 
 export class Battery {
