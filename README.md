@@ -33,9 +33,14 @@ Current state:
 
 ### Mouse
 
-- [x] DPI
 - [x] Report rate
-- [ ] Button remapping
+- [x] DPI
+- [ ] On board profile
+  - [x] Basic reading
+  - [ ] Basic writing
+  - [ ] Button mapping
+  - [ ] RGB
+- [ ] Button mapping
 - [ ] Gesture
 - [ ] **R!G!B!**
 

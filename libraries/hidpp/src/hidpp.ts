@@ -275,9 +275,9 @@ export class Hidpp {
       return this._featureIdToIndex[featureId];
     }
 
-    const data = new ArrayBuffer(2);
+    const request = new ArrayBuffer(2);
     {
-      const view = new DataView(data);
+      const view = new DataView(request);
       view.setUint16(0, featureId);
     }
 
@@ -285,7 +285,7 @@ export class Hidpp {
       0x11,
       0x0000, // Root
       0x0, // GetFeature
-      data,
+      request,
     );
     const view = new Uint8Array(response);
 

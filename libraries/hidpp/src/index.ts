@@ -4,6 +4,7 @@ export * from './feature-set';
 export * from './firmware-info';
 export * from './friendly-name';
 export * from './hidpp';
+export * from './on-board-profile';
 export * from './receiver';
 export * from './report-rate';
 export * from './type-and-name';

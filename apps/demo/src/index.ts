@@ -1,4 +1,4 @@
-import { AdjustableDpi, Battery, BatteryLevel1004, BatteryStatus1000, BatteryStatus1001, BatteryStatus1f20, DeviceType, FeatureSet, FirmwareInfo, FirmwareType, Hidpp, isHidppDevice, Receiver, ReportRate, requestDevice, TypeAndName } from "@yume-chan/hidpp";
+import { AdjustableDpi, Battery, BatteryLevel1004, OnBoardProfile, BatteryStatus1000, BatteryStatus1001, BatteryStatus1f20, DeviceType, FeatureSet, FirmwareInfo, FirmwareType, Hidpp, isHidppDevice, Receiver, ReportRate, requestDevice, TypeAndName, OnBoardProfileMode } from "@yume-chan/hidpp";
 
 const root = document.getElementById('root') as HTMLDivElement;
 
@@ -293,6 +293,72 @@ async function openHidppDevice(device: Hidpp) {
 
     div.appendChild(select);
     container.appendChild(div);
+  } catch (e) { console.log(e); }
+
+  try {
+    const onBoardProfile = new OnBoardProfile(device);
+    const mode = await onBoardProfile.getMode();
+
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.textContent = `On Board Profile Mode: `;
+
+    const select = document.createElement('select');
+    for (const value of [1, 2]) {
+      const option = document.createElement('option');
+      option.value = value.toString();
+      option.textContent = OnBoardProfileMode[value];
+      select.appendChild(option);
+    }
+    select.value = mode.toString();
+    select.onchange = async () => {
+      await onBoardProfile.setMode(parseInt(select.value, 10));
+    };
+    summary.appendChild(select);
+
+    details.appendChild(summary);
+
+    const currentProfile = await onBoardProfile.getCurrentProfile();
+    const profilesInfo = await onBoardProfile.getProfilesInfo();
+
+    for (const profileInfo of profilesInfo) {
+      const details2 = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.textContent = `Profile ${profileInfo.address} (${profileInfo.enabled ? 'Enabled' : 'Disabled'}${profileInfo.address === currentProfile + 1 ? ', Active' : ''})`;
+      details2.appendChild(summary);
+
+      if (profileInfo.enabled) {
+        const profile = await onBoardProfile.readProfile(profileInfo.address);
+        console.log('profile', profileInfo.address, profile);
+        const div3 = document.createElement('div');
+        div3.textContent = `Report Rate: ${profile.reportRate}ms`;
+        details2.appendChild(div3);
+
+        const div4 = document.createElement('div');
+        div4.textContent = `DPI List: ${profile.dpi.filter(Boolean).map((x, i) => {
+          const attributes: string[] = [];
+          if (i === profile.defaultDpi) {
+            attributes.push('default');
+          }
+          if (i === profile.switchedDpi) {
+            attributes.push('switched');
+          }
+          return `${x}${attributes.length ? ` (${attributes.join(', ')})` : ''}`;
+        }).join(', ')}`;
+        details2.appendChild(div4);
+
+        if (profileInfo.address === currentProfile + 1) {
+          const currentDpiIndex = await onBoardProfile.getCurrentDpiIndex();
+          const div5 = document.createElement('div');
+          div5.textContent = `Current DPI: ${profile.dpi[currentDpiIndex]}`;
+          details2.appendChild(div5);
+        }
+      }
+
+      details.appendChild(details2);
+    }
+
+    container.appendChild(details);
   } catch (e) { console.log(e); }
 }
 
