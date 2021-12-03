@@ -9,8 +9,7 @@ export class FeatureSet {
 
   async getFeatureCount(): Promise<number> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x0001);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x0,
     );
@@ -22,8 +21,7 @@ export class FeatureSet {
     const featureCount = await this.getFeatureCount();
     const { index: featureIndex } = await this.hidpp.getFeature(0x0001);
     for (let i = 0; i <= featureCount; i += 1) {
-      const response = await this.hidpp.request(
-        0x11,
+      const response = await this.hidpp.sendLongRequest(
         featureIndex,
         0x1,
         new Uint8Array([i]).buffer,

@@ -15,8 +15,7 @@ export class OnBoardProfile {
 
   async getInfo() {
     const { index: featureIndex } = await this.hidpp.getFeature(0x8100);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x0
     );
@@ -37,8 +36,7 @@ export class OnBoardProfile {
 
   async setMode(mode: OnBoardProfileMode) {
     const { index: featureIndex } = await this.hidpp.getFeature(0x8100);
-    await this.hidpp.request(
-      0x11,
+    await this.hidpp.sendLongRequest(
       featureIndex,
       0x1,
       new Uint8Array([mode]).buffer
@@ -47,8 +45,7 @@ export class OnBoardProfile {
 
   async getMode(): Promise<OnBoardProfileMode> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x8100);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x2
     );
@@ -58,8 +55,7 @@ export class OnBoardProfile {
 
   async getCurrentProfile(): Promise<number> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x8100);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x4
     );
@@ -78,8 +74,7 @@ export class OnBoardProfile {
       view.setUint16(2, offset);
 
       {
-        const response = await this.hidpp.request(
-          0x11,
+        const response = await this.hidpp.sendLongRequest(
           featureIndex,
           0x5,
           request
@@ -135,8 +130,7 @@ export class OnBoardProfile {
 
   async getCurrentDpiIndex() {
     const { index: featureIndex } = await this.hidpp.getFeature(0x8100);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0xb
     );

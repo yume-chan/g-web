@@ -209,6 +209,21 @@ export class Hidpp {
     }
   };
 
+  public sendPacket(
+    reportId: number,
+    reportSize: number,
+    data: ArrayBuffer
+  ) {
+    // On macOS, the `data` must be exactly `reportSize` lenght
+    if (data.byteLength < reportSize) {
+      const temp = new ArrayBuffer(reportSize);
+      new Uint8Array(temp).set(new Uint8Array(data), 0);
+      data = temp;
+    }
+
+    return this.device.sendReport(reportId, data);
+  }
+
   public async getVersion() {
     if (this.version) {
       return;
@@ -229,38 +244,24 @@ export class Hidpp {
     if (!longReportId) {
       // Super old device?
       this.version = 1;
-    } else {
-      const resolver = new PromiseResolver<ArrayBuffer>();
+      return;
+    }
 
+    try {
       // Assume device is version 2
-      const command = 0x00; // Root
-      const address = 0x01 << 4; // GetProtocolVersion
+      this.version = 2;
 
-      this._request = { command, address, resolver };
-
-      await this.device.sendReport(
-        0x11,
-        new Uint8Array([
-          this.index,
-          command,
-          address,
-          // unused0: 0
-          // unused1: 0
-          // ping: 0
-        ])
+      await this.sendLongRequest(
+        0x00, // Root
+        0x01 // GetProtocolVersion
       );
-
-      try {
-        await resolver.promise;
-        this.version = 2;
-      } catch (e) {
-        if (e instanceof Error &&
-          e.name === 'Hidpp1Error' &&
-          (e as any).code === Hidpp1ErrorCode.InvalidCommand) {
-          this.version = 1;
-        } else {
-          throw e;
-        }
+    } catch (e) {
+      if (e instanceof Error &&
+        e.name === 'Hidpp1Error' &&
+        (e as any).code === Hidpp1ErrorCode.InvalidCommand) {
+        this.version = 1;
+      } else {
+        throw e;
       }
     }
   }
@@ -281,8 +282,7 @@ export class Hidpp {
       view.setUint16(0, featureId);
     }
 
-    const response = await this.request(
-      0x11,
+    const response = await this.sendLongRequest(
       0x0000, // Root
       0x0, // GetFeature
       request,
@@ -300,8 +300,9 @@ export class Hidpp {
     return { index, version };
   }
 
-  public async request(
+  public async sendRequest(
     reportId: number,
+    dataSize: number,
     command: number, // feature index in HID++ 2
     address: number, // function index in HID++ 2
     data?: ArrayBuffer
@@ -331,10 +332,11 @@ export class Hidpp {
       const resolver = new PromiseResolver<ArrayBuffer>();
       this._request = { command, address, resolver };
 
-      await this.device.sendReport(
+      await this.sendPacket(
         reportId,
+        3 + dataSize, // header + data size
         concatArrayBuffers(
-          new Uint8Array([this.index, command, address,]),
+          new Uint8Array([this.index, command, address]).buffer,
           data
         )
       );
@@ -344,6 +346,22 @@ export class Hidpp {
     } finally {
       this._mutex.notify();
     }
+  }
+
+  public sendShortRequest(
+    command: number, // feature index in HID++ 2
+    address: number, // function index in HID++ 2
+    data?: ArrayBuffer
+  ) {
+    return this.sendRequest(0x10, 3, command, address, data);
+  }
+
+  public sendLongRequest(
+    command: number, // feature index in HID++ 2
+    address: number, // function index in HID++ 2
+    data?: ArrayBuffer
+  ) {
+    return this.sendRequest(0x11, 16, command, address, data);
   }
 }
 

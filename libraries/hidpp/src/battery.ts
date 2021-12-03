@@ -64,8 +64,7 @@ export class Battery {
 
   async getBattery1000(): Promise<{ level: number, nextLevel: number, status: BatteryStatus1000; }> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x1000);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x0,
     );
@@ -79,8 +78,7 @@ export class Battery {
 
   async getBattery1001(): Promise<{ voltage: number, status: BatteryStatus1001; }> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x1001);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x0,
     );
@@ -93,8 +91,7 @@ export class Battery {
 
   async getBattery1004(): Promise<{ percentage: number, level: BatteryLevel1004, status: BatteryStatus1000, }> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x1004);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x1,
     );
@@ -108,8 +105,7 @@ export class Battery {
 
   async getBattery1f20(): Promise<{ voltage: number, status: BatteryStatus1f20; }> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x1f20);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x0
     );

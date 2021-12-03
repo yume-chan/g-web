@@ -31,8 +31,7 @@ export class FirmwareInfo {
 
   async getDeviceInfo(): Promise<{ entityCount: number; unitId: number, transports: TransportType[], modelId: number[]; extendedModelId: number; supportSerialNumber: boolean; }> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x0003);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x0,
     );
@@ -55,8 +54,7 @@ export class FirmwareInfo {
 
   async getFirmwareInfo(index: number): Promise<{ type: FirmwareType, name: string, major: number, minor: number, build: number; active: boolean; pid: number; }> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x0003);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x1,
       new Uint8Array([index]).buffer,
@@ -84,8 +82,7 @@ export class FirmwareInfo {
 
   async getSerialNumber(): Promise<string> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x0003);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x2,
     );

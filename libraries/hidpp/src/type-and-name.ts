@@ -30,8 +30,7 @@ export class TypeAndName {
 
   async getNameLength(): Promise<number> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x0005);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x0, // getDeviceNameCount
     );
@@ -44,8 +43,7 @@ export class TypeAndName {
     const nameLength = await this.getNameLength();
     let buffer = new Uint8Array(nameLength);
     for (let i = 0; i < nameLength; i += 16) {
-      const response = await this.hidpp.request(
-        0x11,
+      const response = await this.hidpp.sendLongRequest(
         featureIndex,
         0x1, // getDeviceName()
         new Uint8Array([i]).buffer
@@ -57,8 +55,7 @@ export class TypeAndName {
 
   async getType(): Promise<DeviceType> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x0005);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x2,
     );

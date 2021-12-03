@@ -9,8 +9,7 @@ export class AdjustableDpi {
 
   public async getSensorCount(): Promise<number> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x2201);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x0
     );
@@ -25,8 +24,7 @@ export class AdjustableDpi {
       throw new Error('Not Implemented');
     } else {
       const { index: featureIndex } = await this.hidpp.getFeature(0x2201);
-      const response = await this.hidpp.request(
-        0x11,
+      const response = await this.hidpp.sendLongRequest(
         featureIndex,
         0x1,
         new Uint8Array([sensorIndex]).buffer
@@ -64,8 +62,7 @@ export class AdjustableDpi {
       throw new Error('Not Implemented');
     } else {
       const { index: featureIndex } = await this.hidpp.getFeature(0x2201);
-      const response = await this.hidpp.request(
-        0x11,
+      const response = await this.hidpp.sendLongRequest(
         featureIndex,
         0x2,
         new Uint8Array([sensorIndex]).buffer
@@ -86,8 +83,7 @@ export class AdjustableDpi {
       let view = new DataView(data);
       view.setUint8(0, sensorIndex);
       view.setUint16(1, value);
-      const response = await this.hidpp.request(
-        0x11,
+      const response = await this.hidpp.sendLongRequest(
         featureIndex,
         0x3,
         data

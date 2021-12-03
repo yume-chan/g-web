@@ -63,8 +63,7 @@ export class Receiver {
       throw new Error('Unsupported version');
     }
 
-    const response = await this.hidpp.request(
-      0x10,
+    const response = await this.hidpp.sendShortRequest(
       0x81,
       0x02,
     );
@@ -75,16 +74,14 @@ export class Receiver {
 
   public async detectChildren() {
     // Enable notification
-    await this.hidpp.request(
-      0x10,
+    await this.hidpp.sendShortRequest(
       0x80,
       0x00,
       new Uint8Array([0x00, 0x01, 0x00]).buffer
     );
 
     // Request receiver to re-scan for devices
-    await this.hidpp.request(
-      0x10,
+    await this.hidpp.sendShortRequest(
       0x80,
       0x02,
       new Uint8Array([0x02]).buffer

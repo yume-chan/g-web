@@ -9,8 +9,7 @@ export class ReportRate {
 
   async getReportRateList(): Promise<number[]> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x8060);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x0
     );
@@ -27,8 +26,7 @@ export class ReportRate {
 
   async getReportRate(): Promise<number> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x8060);
-    const response = await this.hidpp.request(
-      0x11,
+    const response = await this.hidpp.sendLongRequest(
       featureIndex,
       0x1
     );
@@ -38,8 +36,7 @@ export class ReportRate {
 
   async setReportRate(value: number): Promise<void> {
     const { index: featureIndex } = await this.hidpp.getFeature(0x8060);
-    await this.hidpp.request(
-      0x11,
+    await this.hidpp.sendLongRequest(
       featureIndex,
       0x2,
       new Uint8Array([value])
