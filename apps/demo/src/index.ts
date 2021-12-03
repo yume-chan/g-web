@@ -46,8 +46,13 @@ async function openHidppDevice(device: Hidpp) {
 
   try {
     const featureSet = new FeatureSet(device);
-    const div = document.createElement('div');
-    div.textContent = 'Features: ';
+
+    const details = document.createElement('details');
+    container.appendChild(details);
+
+    const summary = document.createElement('summary');
+    summary.textContent = 'Features';
+    details.appendChild(summary);
 
     let i = 0;
     for await (const feature of featureSet.getFeatures()) {
@@ -167,8 +172,8 @@ async function openHidppDevice(device: Hidpp) {
       if (feature.internal) {
         flags.push('internal');
       }
-      div.textContent = `Feature 0x${i.toString(16)}: ${id}${FEATURE_NAMES[id] ? ` ${FEATURE_NAMES[id]}` : ''}${flags.length ? ` (${flags.join(', ')})` : ''}`;
-      container.appendChild(div);
+      div.textContent = `Index 0x${i.toString(16).padStart(2, '0')}: ${id}${FEATURE_NAMES[id] ? ` ${FEATURE_NAMES[id]}` : ''}${flags.length ? ` (${flags.join(', ')})` : ''}`;
+      details.appendChild(div);
       i += 1;
     }
   } catch (e) { console.log(e); }
@@ -300,8 +305,11 @@ async function openHidppDevice(device: Hidpp) {
     const mode = await onBoardProfile.getMode();
 
     const details = document.createElement('details');
+    container.appendChild(details);
+
     const summary = document.createElement('summary');
     summary.textContent = `On Board Profile Mode: `;
+    details.appendChild(summary);
 
     const select = document.createElement('select');
     for (const value of [1, 2]) {
@@ -316,7 +324,6 @@ async function openHidppDevice(device: Hidpp) {
     };
     summary.appendChild(select);
 
-    details.appendChild(summary);
 
     const currentProfile = await onBoardProfile.getCurrentProfile();
     const profilesInfo = await onBoardProfile.getProfilesInfo();
@@ -357,8 +364,6 @@ async function openHidppDevice(device: Hidpp) {
 
       details.appendChild(details2);
     }
-
-    container.appendChild(details);
   } catch (e) { console.log(e); }
 }
 
