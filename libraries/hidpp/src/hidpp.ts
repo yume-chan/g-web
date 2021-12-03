@@ -214,7 +214,7 @@ export class Hidpp {
     reportSize: number,
     data: ArrayBuffer
   ) {
-    // On macOS, the `data` must be exactly `reportSize` lenght
+    // On macOS, the `data` must be exactly `reportSize` length
     if (data.byteLength < reportSize) {
       const temp = new ArrayBuffer(reportSize);
       new Uint8Array(temp).set(new Uint8Array(data), 0);
