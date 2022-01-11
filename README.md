@@ -48,8 +48,11 @@ Current state:
 
 > I don't have a Logitech keyboard so no feature planned.
 
-## Thanks
+## References
 
-* http://drive.google.com/folderview?id=0BxbRzx7vEV7eWmgwazJ3NUFfQ28: Logitech Official Documentations
-* [pwr-Solaar/Solaar](https://github.com/pwr-Solaar/Solaar): A Logitech device manager for Linux.
-* [cvuchener/hidpp](https://github.com/cvuchener/hidpp): Collection of HID++ tools
+* http://drive.google.com/folderview?id=0BxbRzx7vEV7eWmgwazJ3NUFfQ28
+* [pwr-Solaar/Solaar](https://github.com/pwr-Solaar/Solaar)
+* [cvuchener/hidpp](https://github.com/cvuchener/hidpp)
+* [libratbag/libratbag](https://github.com/libratbag/libratbag)
+* [jte/logitech-rce](https://github.com/jte/logitech-rce)
+* [PixlOne/logiops](https://github.com/PixlOne/logiops)

@@ -9,5 +9,8 @@
     "struct",
     "subdir",
     "yume"
-  ]
+  ],
+  "files.associations": {
+    "*.json": "jsonc"
+  }
 }

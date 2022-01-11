@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "typescript": "^4.4.3",
-    "vite": "^2.6.4"
+    "vite": "^2.7.10"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead"
 }
